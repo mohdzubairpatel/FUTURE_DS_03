@@ -51,6 +51,7 @@ Summary table
 
 ```
 📧 Contact Developer
+
 Email: zubairpatel128@gmail.com
 
 LinkedIn: https://www.linkedin.com/in/mohammed-zubair03
