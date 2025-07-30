@@ -1,0 +1,9 @@
+streamlit
+pandas
+plotly
+openpyxl
+textblob
+wordcloud
+matplotlib
+seaborn
+xlsxwriter
