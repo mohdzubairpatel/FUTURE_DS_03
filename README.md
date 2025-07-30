@@ -1,59 +1,44 @@
-# FUTURE_DS_03
+# 📘 College Event Feedback Analysis Dashboard
 
- 📘 College Event Feedback Analysis Dashboard
+An interactive Streamlit dashboard to analyze student feedback for college events, including ratings, sentiment analysis, word clouds, and downloadable reports.
 
-An interactive dashboard built using **Streamlit** to analyze college event feedback. It supports sentiment analysis, rating visualization, word clouds, and generates downloadable reports.
+## 🔍 Features
+- 📊 Ratings visualization per feedback category
+- 😬 Sentiment analysis using TextBlob
+- ☁️ Word clouds for positive and negative comments
+- 📋 Summary table and satisfaction level detection
+- 📄 Download cleaned data + summary report (Excel)
 
----
+## 🚀 Live Demo
+🔗 [Click here to use the dashboard](https://mohdzubairpatel-college-feedback-ui.streamlit.app)
 
-## ✨ Features
+## 🛠 Built With
+- Streamlit
+- Plotly
+- Pandas
+- Seaborn & Matplotlib
+- WordCloud & TextBlob
 
-- ✅ Upload your own Excel dataset
-- ✅ Automatically loads default dataset if not uploaded
-- ✅ Sentiment analysis using TextBlob
-- ✅ Rating visualization using bar charts
-- ✅ Sentiment pie charts (positive, neutral, negative)
-- ✅ Word clouds from feedback (positive/negative)
-- ✅ Satisfaction level classification
-- ✅ Downloadable Excel report
-
----
-
-## 📦 Requirements
-
-Install dependencies using:
+## 📦 Installation
+Clone the repository and install dependencies:
 
 ```bash
+git clone https://github.com/mohdzubairpatel/future_ds_03.git
+cd future_ds_03
 pip install -r requirements.txt
-
-requirements.txt:
-streamlit
-pandas
-plotly
-openpyxl
-textblob
-wordcloud
-matplotlib
-seaborn
-xlsxwriter
-
-🚀 How to Run the App
 streamlit run College_Event_Feedback_Analysis.py
-Once running, the dashboard will open in your default web browser.
-
-📤 Output
-Cleaned and renamed dataset
-Sentiment-tagged feedback
-Summary report
-Downloadable Excel file containing:
-Cleaned data
-Summary table
-
 ```
-📧 Contact Developer
 
-Email: zubairpatel128@gmail.com
+## 📂 Dataset Format
+Must be an `.xlsx` file with the following columns (12 columns):
+- Rating & Feedback for: Teaching, Course Content, Examination, Labwork, Library, Extracurricular
 
-LinkedIn: https://www.linkedin.com/in/mohammed-zubair03
+## 👨‍💻 Developer
+- **Name**: Mohammed Zubair
+- 📧 [zubairpatel128@gmail.com](mailto:zubairpatel128@gmail.com)
+- 🔗 [LinkedIn](https://www.linkedin.com/in/mohammed-zubair03)
+- 💻 [GitHub](https://github.com/mohdzubairpatel)
 
-GitHub:https://github.com/mohdzubairpatel
+---
+
+> 🤝 Feel free to fork, star, and contribute!
