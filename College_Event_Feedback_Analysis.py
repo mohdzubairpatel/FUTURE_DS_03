@@ -26,19 +26,19 @@ st.markdown("<small>If no file is uploaded, the default dataset will be used aut
 
 uploaded_file = st.file_uploader("📄 Upload your Excel file", type=["xlsx"])
 
-# ✅ Sidebar Menu
+# ✅ Sidebar Menu with Navigation
 with st.sidebar:
     st.image("https://cdn-icons-png.flaticon.com/512/4697/4697260.png", width=100)
     st.markdown("## 📘 Dashboard Menu")
     st.markdown("---")
-    st.markdown("Navigate the dashboard sections:")
-    st.markdown("- 📊 **Ratings**: View average scores of each category.")
-    st.markdown("- 😬️ **Sentiments**: See pie charts of sentiment analysis.")
-    st.markdown("- ☁️ **Word Clouds**: Explore key phrases from feedback.")
-    st.markdown("- 📋 **Summary**: Ratings + sentiment comparison.")
-    st.markdown("- 🗅️ **Download**: Export the full Excel report.")
+    selected_tab = st.radio("Navigate the dashboard sections:", [
+        "📊 Ratings",
+        "😬️ Sentiments",
+        "☁️ WordClouds",
+        "📋 Summary",
+        "🗕️ Download"
+    ])
     st.markdown("---")
-    st.info("👈 Use top tabs to switch sections")
     st.markdown("### 👨‍💼 Contact Developer")
     st.markdown("""
 - 📧 [zubairpatel128@gmail.com](mailto:zubairpatel128@gmail.com)  
@@ -91,117 +91,126 @@ for col in feedback_cols:
 
 sentiment_cols = [col.replace('Feedback', 'Sentiment') for col in feedback_cols]
 
-# ✅ Step 7: Professional Layout with Tabs
-tabs = st.tabs(["📊 Ratings", "😬️ Sentiments", "☁️ WordClouds", "📋 Summary", "🗅️ Download"])
+# ✅ Step 7: Tab Navigation Based on Selection
+tabs = {
+    "📊 Ratings": 0,
+    "😬️ Sentiments": 1,
+    "☁️ WordClouds": 2,
+    "📋 Summary": 3,
+    "🗕️ Download": 4
+}
+tab_list = st.tabs(list(tabs.keys()))
 
 # ✅ Step 8: Rating Insights with Bar Chart
-with tabs[0]:
-    st.header("📊 Rating Insights")
-    avg_ratings = df[rating_columns].mean().sort_values().reset_index()
-    avg_ratings.columns = ['Category', 'Average_Rating']
-    fig1 = px.bar(
-        avg_ratings, x='Average_Rating', y='Category', orientation='h',
-        color='Category', text='Average_Rating',
-        color_discrete_sequence=px.colors.qualitative.Vivid,
-        title='Average Ratings Across Feedback Categories'
-    )
-    fig1.update_traces(texttemplate='%{text:.2f}', textposition='outside')
-    fig1.update_layout(title_x=0.5, xaxis=dict(range=[0, 5]))
-    st.plotly_chart(fig1, use_container_width=True)
+if selected_tab == "📊 Ratings":
+    with tab_list[0]:
+        st.header("📊 Rating Insights")
+        avg_ratings = df[rating_columns].mean().sort_values().reset_index()
+        avg_ratings.columns = ['Category', 'Average_Rating']
+        fig1 = px.bar(
+            avg_ratings, x='Average_Rating', y='Category', orientation='h',
+            color='Category', text='Average_Rating',
+            color_discrete_sequence=px.colors.qualitative.Vivid,
+            title='Average Ratings Across Feedback Categories'
+        )
+        fig1.update_traces(texttemplate='%{text:.2f}', textposition='outside')
+        fig1.update_layout(title_x=0.5, xaxis=dict(range=[0, 5]))
+        st.plotly_chart(fig1, use_container_width=True)
 
 # ✅ Step 9: Sentiment Pie Charts Side-by-Side
-with tabs[1]:
-    st.header("😤 Sentiment Distribution by Category")
-    col1, col2 = st.columns(2)
-    for i, sentiment_col in enumerate(sentiment_cols):
-        sentiment_counts = df[sentiment_col].value_counts()
-        fig = go.Figure([
-            go.Pie(
-                labels=sentiment_counts.index,
-                values=sentiment_counts.values,
-                marker=dict(colors=['#98FB98', '#D3D3D3', '#FF6F61']),
-                textinfo='percent+label', hole=0.3
-            )
-        ])
-        fig.update_layout(title_text=f"{sentiment_col.replace('_', ' ')}", title_x=0.5, height=380)
-        if i % 2 == 0:
-            col1.plotly_chart(fig, use_container_width=True)
-        else:
-            col2.plotly_chart(fig, use_container_width=True)
+elif selected_tab == "😬️ Sentiments":
+    with tab_list[1]:
+        st.header("😤 Sentiment Distribution by Category")
+        col1, col2 = st.columns(2)
+        for i, sentiment_col in enumerate(sentiment_cols):
+            sentiment_counts = df[sentiment_col].value_counts()
+            fig = go.Figure([
+                go.Pie(
+                    labels=sentiment_counts.index,
+                    values=sentiment_counts.values,
+                    marker=dict(colors=['#98FB98', '#D3D3D3', '#FF6F61']),
+                    textinfo='percent+label', hole=0.3
+                )
+            ])
+            fig.update_layout(title_text=f"{sentiment_col.replace('_', ' ')}", title_x=0.5, height=380)
+            (col1 if i % 2 == 0 else col2).plotly_chart(fig, use_container_width=True)
 
 # ✅ Step 10: Word Clouds
-with tabs[2]:
-    st.header("☁️ Word Clouds")
-    for col in feedback_cols:
-        sentiment_col = col.replace('Feedback', 'Sentiment')
-        col1, col2 = st.columns(2)
-        for idx, (sentiment, color) in enumerate([('Positive', 'Greens'), ('Negative', 'Reds')]):
-            text = ' '.join(df[df[sentiment_col] == sentiment][col].dropna().astype(str))
-            if text.strip():
-                wordcloud = WordCloud(width=600, height=400, background_color='white', colormap=color).generate(text)
-                if idx == 0:
-                    col1.markdown(f"**{col.replace('_', ' ')} - {sentiment}**")
-                    col1.image(wordcloud.to_array())
-                else:
-                    col2.markdown(f"**{col.replace('_', ' ')} - {sentiment}**")
-                    col2.image(wordcloud.to_array())
+elif selected_tab == "☁️ WordClouds":
+    with tab_list[2]:
+        st.header("☁️ Word Clouds")
+        for col in feedback_cols:
+            sentiment_col = col.replace('Feedback', 'Sentiment')
+            col1, col2 = st.columns(2)
+            for idx, (sentiment, color) in enumerate([('Positive', 'Greens'), ('Negative', 'Reds')]):
+                text = ' '.join(df[df[sentiment_col] == sentiment][col].dropna().astype(str))
+                if text.strip():
+                    wordcloud = WordCloud(width=600, height=400, background_color='white', colormap=color).generate(text)
+                    if idx == 0:
+                        col1.markdown(f"**{col.replace('_', ' ')} - {sentiment}**")
+                        col1.image(wordcloud.to_array())
+                    else:
+                        col2.markdown(f"**{col.replace('_', ' ')} - {sentiment}**")
+                        col2.image(wordcloud.to_array())
 
 # ✅ Step 11: Summary Table + Satisfaction
-with tabs[3]:
-    st.header("📋 Summary Table & Satisfaction")
-    summary = pd.DataFrame({
-        'Category': rating_columns,
-        'Average Rating': df[rating_columns].mean().values,
-        'Positive Feedback (%)': [
+elif selected_tab == "📋 Summary":
+    with tab_list[3]:
+        st.header("📋 Summary Table & Satisfaction")
+        summary = pd.DataFrame({
+            'Category': rating_columns,
+            'Average Rating': df[rating_columns].mean().values,
+            'Positive Feedback (%)': [
+                100 * (df[col.replace('Rating', 'Sentiment')] == 'Positive').sum() / len(df)
+                for col in rating_columns
+            ]
+        })
+        st.dataframe(summary.style.background_gradient(cmap='YlGnBu'))
+
+        df['Satisfaction_Level'] = df[rating_columns].mean(axis=1).apply(
+            lambda x: 'High' if x > 4 else 'Medium' if x > 2.5 else 'Low'
+        )
+        st.subheader("🌟 Student Satisfaction Levels")
+        st.bar_chart(df['Satisfaction_Level'].value_counts())
+
+        all_sentiments = pd.concat([df[col] for col in sentiment_cols])
+        sentiment_summary = all_sentiments.value_counts()
+        fig = px.pie(
+            names=sentiment_summary.index,
+            values=sentiment_summary.values,
+            title='Overall Sentiment Proportion in Feedback',
+            hole=0.4,
+            color_discrete_sequence=px.colors.qualitative.Safe
+        )
+        fig.update_layout(title_x=0.5)
+        st.plotly_chart(fig, use_container_width=True)
+
+        pos_percent = [
             100 * (df[col.replace('Rating', 'Sentiment')] == 'Positive').sum() / len(df)
             for col in rating_columns
         ]
-    })
-    st.dataframe(summary.style.background_gradient(cmap='YlGnBu'))
-
-    df['Satisfaction_Level'] = df[rating_columns].mean(axis=1).apply(
-        lambda x: 'High' if x > 4 else 'Medium' if x > 2.5 else 'Low'
-    )
-    st.subheader("🌟 Student Satisfaction Levels")
-    st.bar_chart(df['Satisfaction_Level'].value_counts())
-
-    all_sentiments = pd.concat([df[col] for col in sentiment_cols])
-    sentiment_summary = all_sentiments.value_counts()
-    fig = px.pie(
-        names=sentiment_summary.index,
-        values=sentiment_summary.values,
-        title='Overall Sentiment Proportion in Feedback',
-        hole=0.4,
-        color_discrete_sequence=px.colors.qualitative.Safe
-    )
-    fig.update_layout(title_x=0.5)
-    st.plotly_chart(fig, use_container_width=True)
-
-    pos_percent = [
-        100 * (df[col.replace('Rating', 'Sentiment')] == 'Positive').sum() / len(df)
-        for col in rating_columns
-    ]
-    fig = px.bar(
-        x=rating_columns, y=pos_percent,
-        labels={'x': 'Category', 'y': 'Positive Feedback (%)'},
-        color=rating_columns, text=pos_percent,
-        color_discrete_sequence=px.colors.qualitative.Dark2,
-        title='Positive Feedback Percentage per Category'
-    )
-    fig.update_traces(texttemplate='%{text:.1f}%', textposition='outside')
-    fig.update_layout(title_x=0.5, yaxis_range=[0, 100])
-    st.plotly_chart(fig, use_container_width=True)
+        fig = px.bar(
+            x=rating_columns, y=pos_percent,
+            labels={'x': 'Category', 'y': 'Positive Feedback (%)'},
+            color=rating_columns, text=pos_percent,
+            color_discrete_sequence=px.colors.qualitative.Dark2,
+            title='Positive Feedback Percentage per Category'
+        )
+        fig.update_traces(texttemplate='%{text:.1f}%', textposition='outside')
+        fig.update_layout(title_x=0.5, yaxis_range=[0, 100])
+        st.plotly_chart(fig, use_container_width=True)
 
 # ✅ Step 12: Downloadable Report
-with tabs[4]:
-    st.header("🗅️ Download Cleaned Dataset & Summary")
-    output = io.BytesIO()
-    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-        df.to_excel(writer, index=False, sheet_name='Cleaned_Data')
-        summary.to_excel(writer, index=False, sheet_name='Summary')
-    st.download_button(
-        label="📄 Download Excel Report",
-        data=output.getvalue(),
-        file_name="College_Feedback_Summary.xlsx",
-        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    )
+elif selected_tab == "🗕️ Download":
+    with tab_list[4]:
+        st.header("🗕️ Download Cleaned Dataset & Summary")
+        output = io.BytesIO()
+        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+            df.to_excel(writer, index=False, sheet_name='Cleaned_Data')
+            summary.to_excel(writer, index=False, sheet_name='Summary')
+        st.download_button(
+            label="📄 Download Excel Report",
+            data=output.getvalue(),
+            file_name="College_Feedback_Summary.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
