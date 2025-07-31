@@ -1,4 +1,6 @@
-📘 College Event Feedback Analysis Dashboard
+#📘 College Event Feedback Analysis Dashboard
+
+---
 
 This Streamlit-based interactive dashboard transforms raw student feedback from college events into actionable insights using data visualization and Natural Language Processing (NLP).
 ---
