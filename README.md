@@ -37,10 +37,13 @@ Supports .xlsx files with feedback data. If no file is uploaded, it loads a defa
 
 🚀 How to Run
 
-bash
+```bash
 
 pip install -r requirements.txt
 streamlit run College_Event_Feedback_Analysis.py
+
+```
+---
 📌 Deliverables
 Cleaned dataset with transformed ratings
 
