@@ -1,37 +1,46 @@
-# 📘 College Event Feedback Analysis Dashboard
+📘 College Event Feedback Analysis Dashboard
+This Streamlit-based interactive dashboard transforms raw student feedback from college events into actionable insights using data visualization and Natural Language Processing (NLP).
 
-An interactive Streamlit dashboard to analyze student feedback for college events, including ratings, sentiment analysis, word clouds, and downloadable reports.
+🧠 Project Objective
+To analyze rating and comment-based feedback collected from students after college events like tech fests, workshops, and seminars. The dashboard helps identify satisfaction levels, common sentiments, and areas for improvement.
 
-## 🔍 Features
-- 📊 Ratings visualization per feedback category
-- 😬 Sentiment analysis using TextBlob
-- ☁️ Word clouds for positive and negative comments
-- 📋 Summary table and satisfaction level detection
-- 📄 Download cleaned data + summary report (Excel)
+✨ Key Features
+📊 Ratings Analysis: Visual breakdown of average scores for different categories (Teaching, Library, etc.)
 
-## 🚀 Live Demo
-🔗 [Click here to use the dashboard](https://mohdzubairpatel-college-feedback-ui.streamlit.app)
+🗣️ Sentiment Analysis: Uses TextBlob to classify feedback as Positive, Neutral, or Negative
 
-## 🛠 Built With
-- Streamlit
-- Plotly
-- Pandas
-- Seaborn & Matplotlib
-- WordCloud & TextBlob
+☁️ Word Clouds: Highlights frequent keywords in positive and negative comments
 
-## 📦 Installation
-Clone the repository and install dependencies:
+📋 Summary Table: Displays average ratings and percentage of positive feedback per category
 
-```bash
-git clone https://github.com/mohdzubairpatel/future_ds_03.git
-cd future_ds_03
+📁 Export Report: Download cleaned data and summary in Excel format
+
+💻 Interactive UI: Clean, professional interface with sidebar navigation and emoji-coded tabs
+
+⚙️ Tech Stack
+Frontend: Streamlit
+
+Libraries: pandas, plotly, textblob, wordcloud, matplotlib, seaborn
+
+NLP: Sentiment classification using TextBlob
+
+📂 Dataset
+Supports .xlsx files with feedback data. If no file is uploaded, it loads a default dataset (finalDataset0.2.xlsx) for demo purposes.
+
+🚀 How to Run
+bash
+Copy
+Edit
 pip install -r requirements.txt
 streamlit run College_Event_Feedback_Analysis.py
-```
+📌 Deliverables
+Cleaned dataset with transformed ratings
 
-## 📂 Dataset Format
-Must be an `.xlsx` file with the following columns (12 columns):
-- Rating & Feedback for: Teaching, Course Content, Examination, Labwork, Library, Extracurricular
+Visual insights via charts and word clouds
+
+Downloadable Excel report
+
+Categorized sentiment and satisfaction analysis
 
 ## 👨‍💻 Developer
 - **Name**: Mohammed Zubair
