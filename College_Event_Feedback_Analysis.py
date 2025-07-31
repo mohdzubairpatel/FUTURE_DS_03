@@ -89,6 +89,16 @@ for col in feedback_cols:
 
 sentiment_cols = [col.replace('Feedback', 'Sentiment') for col in feedback_cols]
 
+# ✅ Precompute summary_df (used in Summary and Download tabs)
+summary_df = pd.DataFrame({
+    'Category': rating_columns,
+    'Average Rating': df[rating_columns].mean().values,
+    'Positive Feedback (%)': [
+        100 * (df[col.replace('Rating', 'Sentiment')] == 'Positive').sum() / len(df)
+        for col in rating_columns
+    ]
+})
+
 # ✅ Ratings Page
 if page == "📊 Ratings":
     st.header("📊 Average Ratings per Category")
@@ -129,14 +139,6 @@ elif page == "☁️ WordClouds":
 # ✅ Summary Page
 elif page == "📋 Summary":
     st.header("📋 Summary Overview")
-    summary_df = pd.DataFrame({
-        'Category': rating_columns,
-        'Average Rating': df[rating_columns].mean().values,
-        'Positive Feedback (%)': [
-            100 * (df[col.replace('Rating', 'Sentiment')] == 'Positive').sum() / len(df)
-            for col in rating_columns
-        ]
-    })
     st.dataframe(summary_df.style.background_gradient(cmap='YlGnBu'))
 
     st.subheader("🌟 Student Satisfaction Levels")
