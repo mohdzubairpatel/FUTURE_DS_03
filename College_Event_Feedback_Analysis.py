@@ -21,18 +21,18 @@ st.set_page_config(layout="wide", page_title="College Feedback Dashboard", page_
 
 # ✅ Step 3: Title and File Upload
 with st.container(border=True):
-    st.title(":bar_chart: College Event Feedback Analysis Dashboard")
-    st.caption("If no file is uploaded, the default dataset will be used automatically.")
-    uploaded_file = st.file_uploader(":page_facing_up: Upload your Excel file", type=["xlsx"])
+    st.title("📘 College Event Feedback Analysis Dashboard")
+    st.caption("Upload a student feedback Excel file below. If none is uploaded, a sample dataset will be used.")
+    uploaded_file = st.file_uploader("📄 Upload your Excel file", type=["xlsx"])
 
 # ✅ Step 4: Sidebar Menu with Navigation
 with st.sidebar:
     st.image("https://cdn-icons-png.flaticon.com/512/4697/4697260.png", width=120)
     st.markdown("## 📘 Dashboard Menu")
     st.markdown("**Navigate through the sections below:**")
-    selected_tab = st.radio("### Select a Section", [
+    selected_tab = st.radio("### Go To Section", [
         "📊 Ratings",
-        "🗣️ Sentiments",
+        "🔊 Sentiments",
         "☁️ WordClouds",
         "📋 Summary",
         "📁 Download"
@@ -52,13 +52,13 @@ def load_data(file_path_or_buffer):
 
 if uploaded_file:
     df = load_data(uploaded_file)
-    st.success("✅ Using uploaded dataset.")
+    st.success("✅ Uploaded dataset loaded successfully.")
 else:
     try:
         df = load_data("finalDataset0.2.xlsx")
-        st.info("ℹ️ No file uploaded. Loaded default dataset: finalDataset0.2.xlsx")
+        st.info("📂 Default dataset loaded: finalDataset0.2.xlsx")
     except FileNotFoundError:
-        st.error("❌ No file uploaded and default dataset not found. Please upload an Excel file.")
+        st.error("❌ Default dataset not found. Please upload a file.")
         st.stop()
 
 # ✅ Step 6: Rename Columns
@@ -112,7 +112,7 @@ summary = pd.DataFrame({
 # ✅ Step 10: Ratings Tab
 if selected_tab == "📊 Ratings":
     with st.container(border=True):
-        st.header(":bar_chart: Rating Insights")
+        st.header("📊 Rating Insights")
         avg_ratings = df[rating_columns].mean().sort_values().reset_index()
         avg_ratings.columns = ['Category', 'Average_Rating']
         fig = px.bar(
@@ -125,9 +125,9 @@ if selected_tab == "📊 Ratings":
         st.plotly_chart(fig, use_container_width=True)
 
 # ✅ Step 11: Sentiments Tab
-elif selected_tab == "🗣️ Sentiments":
+elif selected_tab == "🔊 Sentiments":
     with st.container(border=True):
-        st.header(":loudspeaker: Sentiment Distribution by Category")
+        st.header("🔊 Feedback Sentiment Distribution")
         col1, col2 = st.columns(2)
         for i, sentiment_col in enumerate(sentiment_cols):
             sentiment_counts = df[sentiment_col].value_counts()
@@ -138,28 +138,34 @@ elif selected_tab == "🗣️ Sentiments":
             else:
                 col2.plotly_chart(fig, use_container_width=True)
 
-# ✅ Step 12: WordClouds Tab
+# ✅ Step 12: WordClouds Tab 
 elif selected_tab == "☁️ WordClouds":
     with st.container(border=True):
-        st.header(":cloud: Word Clouds of Feedback")
-        for col in feedback_cols:
-            sentiment_col = col.replace('Feedback', 'Sentiment')
-            col1, col2 = st.columns(2)
-            for idx, (sentiment, color) in enumerate([('Positive', 'Greens'), ('Negative', 'Reds')]):
-                text = ' '.join(df[df[sentiment_col] == sentiment][col].dropna().astype(str))[:2000]
-                if text.strip():
-                    wordcloud = WordCloud(width=600, height=400, background_color='white', colormap=color).generate(text)
-                    if idx == 0:
-                        col1.subheader(f"{col.replace('_', ' ')} - {sentiment}")
-                        col1.image(wordcloud.to_array())
-                    else:
-                        col2.subheader(f"{col.replace('_', ' ')} - {sentiment}")
-                        col2.image(wordcloud.to_array())
+        st.header("☁️ Word Clouds of Feedback")
+
+        @st.cache_data
+        def generate_wordcloud(text, color):
+            return WordCloud(width=600, height=400, background_color='white', colormap=color).generate(text)
+
+        with st.expander("🔍 Click to View Word Clouds", expanded=False):
+            for col in feedback_cols:
+                sentiment_col = col.replace('Feedback', 'Sentiment')
+                col1, col2 = st.columns(2)
+                for idx, (sentiment, color) in enumerate([('Positive', 'Greens'), ('Negative', 'Reds')]):
+                    text = ' '.join(df[df[sentiment_col] == sentiment][col].dropna().astype(str))[:1000]
+                    if text.strip():
+                        wc = generate_wordcloud(text, color)
+                        if idx == 0:
+                            col1.subheader(f"{col.replace('_', ' ')} - {sentiment}")
+                            col1.image(wc.to_array())
+                        else:
+                            col2.subheader(f"{col.replace('_', ' ')} - {sentiment}")
+                            col2.image(wc.to_array())
 
 # ✅ Step 13: Summary Tab
 elif selected_tab == "📋 Summary":
     with st.container(border=True):
-        st.header(":scroll: Summary Table and Satisfaction Levels")
+        st.header("📋 Summary of Ratings and Sentiments")
         styled_summary = summary.style.format({
             "Average Rating": "{:.2f}",
             "Positive Feedback (%)": "{:.2f}"
@@ -168,7 +174,7 @@ elif selected_tab == "📋 Summary":
 
         df['Satisfaction_Level'] = df[rating_columns].mean(axis=1).apply(
             lambda x: 'High' if x > 4 else 'Medium' if x > 2.5 else 'Low')
-        st.subheader(":star: Student Satisfaction Levels")
+        st.subheader("🌟 Student Satisfaction Levels")
         st.bar_chart(df['Satisfaction_Level'].value_counts())
 
         all_sentiments = pd.concat([df[col] for col in sentiment_cols])
@@ -180,8 +186,8 @@ elif selected_tab == "📋 Summary":
 # ✅ Step 14: Download Tab
 elif selected_tab == "📁 Download":
     with st.container(border=True):
-        st.header(":open_file_folder: Download Cleaned Dataset & Summary")
-        st.write("This file includes cleaned feedback data and summarized rating and sentiment analysis.")
+        st.header("📁 Download Cleaned Dataset & Summary")
+        st.markdown("This file includes cleaned feedback data and summarized rating and sentiment analysis.")
         output = io.BytesIO()
         with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
             df.to_excel(writer, index=False, sheet_name='Cleaned_Data')
