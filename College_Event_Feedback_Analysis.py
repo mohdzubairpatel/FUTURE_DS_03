@@ -1,4 +1,4 @@
-# 📘 College Feedback Analysis Interactive Dashboard (Fully Interactive & UI Enhanced)
+# 📘 College Feedback Analysis Interactive Dashboard (Interactive Sidebar Navigation)
 
 # ✅ Step 1: Install Required Libraries (Run once)
 # !pip install streamlit pandas plotly openpyxl textblob wordcloud matplotlib seaborn xlsxwriter --quiet
@@ -25,14 +25,10 @@ st.set_page_config(layout="wide", page_title="College Feedback Dashboard", page_
 # ✅ Sidebar Navigation
 with st.sidebar:
     st.image("https://cdn-icons-png.flaticon.com/512/4697/4697260.png", width=100)
-    st.title("📘 Menu")
-    st.markdown("""
-    - 📊 Ratings Overview  
-    - 😬️ Sentiment Insights  
-    - ☁️ Word Clouds  
-    - 📋 Summary Table  
-    - 🗅️ Download Report
-    """)
+    st.title("📘 Dashboard Menu")
+    page = st.radio("Go to:", [
+        "📊 Ratings", "😬️ Sentiments", "☁️ WordClouds", "📋 Summary", "🗅️ Download"
+    ])
     st.markdown("---")
     st.info("👨‍💻 Developed by Mohammed Zubair")
     st.markdown("""
@@ -93,11 +89,8 @@ for col in feedback_cols:
 
 sentiment_cols = [col.replace('Feedback', 'Sentiment') for col in feedback_cols]
 
-# ✅ Tabs for Navigation
-tabs = st.tabs(["📊 Ratings", "😬️ Sentiments", "☁️ WordClouds", "📋 Summary", "🗅️ Download"])
-
-# ✅ Ratings Tab
-with tabs[0]:
+# ✅ Ratings Page
+if page == "📊 Ratings":
     st.header("📊 Average Ratings per Category")
     avg_ratings = df[rating_columns].mean().sort_values().reset_index()
     avg_ratings.columns = ['Category', 'Average Rating']
@@ -108,8 +101,8 @@ with tabs[0]:
     fig1.update_layout(title_x=0.5, xaxis=dict(range=[0, 5]))
     st.plotly_chart(fig1, use_container_width=True)
 
-# ✅ Sentiments Tab
-with tabs[1]:
+# ✅ Sentiments Page
+elif page == "😬️ Sentiments":
     st.header("😬 Sentiment Analysis by Category")
     col1, col2 = st.columns(2)
     for i, sentiment_col in enumerate(sentiment_cols):
@@ -120,8 +113,8 @@ with tabs[1]:
         fig.update_layout(title_text=sentiment_col.replace('_', ' '), title_x=0.5, height=360)
         (col1 if i % 2 == 0 else col2).plotly_chart(fig, use_container_width=True)
 
-# ✅ WordClouds Tab
-with tabs[2]:
+# ✅ WordClouds Page
+elif page == "☁️ WordClouds":
     st.header("☁️ Feedback Word Clouds")
     for col in feedback_cols:
         sentiment_col = col.replace('Feedback', 'Sentiment')
@@ -133,8 +126,8 @@ with tabs[2]:
                 target_col.markdown(f"**{col.replace('_', ' ')} - {sentiment}**")
                 target_col.image(wc.to_array())
 
-# ✅ Summary Tab
-with tabs[3]:
+# ✅ Summary Page
+elif page == "📋 Summary":
     st.header("📋 Summary Overview")
     summary_df = pd.DataFrame({
         'Category': rating_columns,
@@ -160,8 +153,8 @@ with tabs[3]:
     fig.update_layout(title_x=0.5)
     st.plotly_chart(fig, use_container_width=True)
 
-# ✅ Download Tab
-with tabs[4]:
+# ✅ Download Page
+elif page == "🗅️ Download":
     st.header("🗅️ Download Cleaned Data & Summary")
     output = io.BytesIO()
     with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
